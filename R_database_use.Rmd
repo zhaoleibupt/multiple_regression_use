@@ -50,6 +50,28 @@ dbDisconnect(conn)
 ```
 
 
+#3.RODBC(this package is suitable for all databases,including mysql,sqlserver,oracle,ect)
+
+###(1)first you should set the environment and dbname you use in this project(if you don't know how to do this,you can google it)
+
+###(2)connect to the database that is set above
+
+```{r}
+con<-odbcConnect("mysql",uid="root",pwd="zhaolei19930410")
+sqlTables(con)  #this function is used for showing tables in the danames above
+```
+###(3)we write table into database(it's avaiable for chinese character)
+
+```{r}
+a<-c(1:3)
+b<-c("zh","赵","李")
+dat2<-data.frame(a=a,b=b)
+sqlSave(con,dat2,tablename="test8")
+sqlQuery(con,"select * from test8")
+sqlFetch(con,"test8")
+odbcClose(con)
+```
+
 
 
 
