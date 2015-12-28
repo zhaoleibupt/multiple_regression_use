@@ -1,0 +1,54 @@
+---
+title: "电信业务总量影响因素分析"
+output: html_document
+---
+
+###1.查找文献，获得影响因素，并从国家统计局网站获取数据
+
+###2.读取数据，并进行多元回归
+
+```{r}
+dat<-read.csv("Q:/data1.csv")
+dat<-dat[,-1]
+cor(dat)  #计算变量间的相关性
+fit1<-lm(电信业务总量~.,data=dat)
+summary(fit1)
+fit2<-lm(电信业务总量~.-1,data=dat)
+summary(fit2)
+```
+###3.通过上述拟合模型比较，我们考虑到存在变量间存在相关性，并进行逐步回归
+
+```{r}
+step(fit1,direction = "both")
+fit1_1<-lm(电信业务总量 ~ 移动交换机容量 + 居民消费水平 + 人口 + 
+    电信固定资产投资 + 互联网上网人数, data = dat)
+summary(fit1_1)
+```
+
+
+```{r}
+step(fit2,direction = "both")
+fit2_1<-lm(电信业务总量 ~ 移动交换机容量 + 居民消费水平 + 电信固定资产投资 + 
+    互联网上网人数 - 1, data = dat)
+summary(fit2_1)
+```
+
+###4.在fit2_1的基础上做回归诊断
+
+####(1)残差正态性检验
+```{r}
+y_res<-resid(fit2_1)
+shapiro.test(y_res)
+plot(fit2_1,2)  ##正太Q-Q图
+```
+
+#####(2)标准化的残差散点图(看残差方差是否相等)
+```{r}
+y.rst<-rstandard(fit2_1)
+y.fit<-predict(fit2_1)
+plot(y.rst~y.fit)
+```
+
+
+综上，最终模型使用的是fit2_1模型
+
